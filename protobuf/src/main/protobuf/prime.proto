@@ -1,0 +1,17 @@
+syntax = "proto3";
+package com.service;
+
+service PrimeNumberService {
+  // Stream back a prime number depending on the given range
+  rpc GeneratePrimeNumber  (PrimeNumberRequest) returns (stream PrimeNumberResponse) {}
+}
+
+// The request message containing the maximum number range.
+message PrimeNumberRequest {
+  uint32 maxNumberRange = 1;
+}
+
+// The response message containing a prime number base from the the given range.
+message PrimeNumberResponse {
+  uint32 value = 1;
+}
