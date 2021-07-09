@@ -18,7 +18,7 @@ lazy val mordor =
     .settings(
       libraryDependencies ++=
         catsEffect ++
-          munit ++
+          grpc ++
           fs2 ++
           scalaCompilers
     )

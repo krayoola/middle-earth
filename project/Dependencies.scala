@@ -1,11 +1,10 @@
 import sbt._
 
-
 object Dependencies {
 
   object Version {
     val CATS_EFFECT = "3.1.1"
-    val MUNIT = "1.0.5"
+    // val MUNIT = "1.0.5"
     val MONADIC_FOR = "0.3.1"
     val FS2 = "3.0.6"
   }
@@ -22,8 +21,16 @@ object Dependencies {
 
   val fs2 = Seq("co.fs2" %% "fs2-core" % Version.FS2)
 
-  val munit = Seq("org.typelevel" %% "munit-cats-effect-3" % Version.MUNIT % Test)
+  // val munit = Seq(
+  //   "org.typelevel" %% "munit-cats-effect-3" % Version.MUNIT % Test
+  // )
 
-  val scalaCompilers = Seq(compilerPlugin("com.olegpy" %% "better-monadic-for" % Version.MONADIC_FOR))
+  val grpc = Seq(
+    "io.grpc" % "grpc-netty-shaded" % scalapb.compiler.Version.grpcJavaVersion
+  )
+
+  val scalaCompilers = Seq(
+    compilerPlugin("com.olegpy" %% "better-monadic-for" % Version.MONADIC_FOR)
+  )
 
 }
