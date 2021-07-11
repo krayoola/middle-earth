@@ -20,10 +20,13 @@ class PrimeNumberServiceModule extends PrimeNumberServiceFs2Grpc[IO, Metadata] {
       .iterate(1)(_ + 1)
       .filter(isPrime)
       .takeWhile(_ <= request.maxNumberRange)
-      .map(v => PrimeNumberResponse(v))
+      .map(x => {
+        println(x)
+        x
+      })
+      .map(PrimeNumberResponse(_))
 
 }
-
 
 // grpcurl -d '{"maxNumberRange":"17"}' -plaintext \
 // -import-path protobuf/src/main/protobuf -proto prime.proto \

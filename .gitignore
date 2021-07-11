@@ -4,3 +4,5 @@
 .idea
 .bloop
 .bsp
+.DS_Store
+**/.DS_Store

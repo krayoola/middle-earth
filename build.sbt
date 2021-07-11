@@ -23,3 +23,17 @@ lazy val mordor =
           scalaCompilers
     )
     .dependsOn(protobuf)
+
+lazy val gondor =
+  project
+    .in(file("gondor"))
+    .settings(
+      libraryDependencies ++=
+        pureConfig ++
+        logback ++
+        http4s ++
+          grpc ++
+          fs2 ++
+          scalaCompilers
+    )
+    .dependsOn(protobuf)
