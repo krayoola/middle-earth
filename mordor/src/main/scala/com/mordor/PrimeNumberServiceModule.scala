@@ -6,11 +6,14 @@ import com.service.prime.PrimeNumberServiceFs2Grpc
 import com.service.prime.{PrimeNumberRequest, PrimeNumberResponse}
 import io.grpc.stub.StreamObserver
 import scala.concurrent.ExecutionContext.Implicits.global
-import io.grpc.Metadata
+import io.grpc.{Metadata, Status}
 
 class PrimeNumberServiceModule extends PrimeNumberServiceFs2Grpc[IO, Metadata] {
 
-  def isPrime(n: Int): Boolean = Range(2, n - 1).filter(n % _ == 0).length == 0
+  def isPrime(n: Int): Boolean = {
+    if(n <= 1) false
+    else Range(2, n - 1).filter(n % _ == 0).length == 0
+  }
 
   override def generatePrimeNumber(
       request: PrimeNumberRequest,
@@ -20,10 +23,7 @@ class PrimeNumberServiceModule extends PrimeNumberServiceFs2Grpc[IO, Metadata] {
       .iterate(1)(_ + 1)
       .filter(isPrime)
       .takeWhile(_ <= request.maxNumberRange)
-      .map(x => {
-        println(x)
-        x
-      })
+      .debug(v => s"value generated: $v")
       .map(PrimeNumberResponse(_))
 
 }

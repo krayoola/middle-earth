@@ -4,8 +4,13 @@ import cats.effect.{ExitCode, IO, IOApp}
 
 object Main extends IOApp.Simple {
 
-  def run: IO[Unit] = Server.buildServer[IO]()
+  def run: IO[Unit] = Server
+    .buildServer[IO]()
     .use(_ => IO.never)
-    .as(ExitCode.Success)
+    .attempt
+    .map {
+      case Left(_)  => ExitCode.Error // TODO: show error later
+      case Right(_) => ExitCode.Success
+    }
 
 }
