@@ -5,8 +5,10 @@ import cats.effect.kernel.Sync
 import com.gondor.service.PrimeNumberServiceAlgebra
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import cats.syntax.all._
-import com.gondor.service.Validator.InvalidRequest
+import cats.implicits._
+import com.gondor.service.Validator.{GeneralError, InvalidRequest}
+import com.service.prime.PrimeNumberResponse
+
 class PrimeNumberEndpoint[F[_]: Sync](primeNumberService: PrimeNumberServiceAlgebra[F])
     extends Http4sDsl[F] {
 
@@ -14,16 +16,21 @@ class PrimeNumberEndpoint[F[_]: Sync](primeNumberService: PrimeNumberServiceAlge
     HttpRoutes.of[F] { case GET -> Root / "prime" / IntVar(intInputValue) =>
       primeNumberService.getPrimeNumbers(intInputValue).value.flatMap {
         case Right(result) =>
-          // TODO: create a separate formatter
-          val streamOfPrimeNumbers = result.map(_.value.toString)
-          Ok(streamOfPrimeNumbers)
+          val formattedValues: fs2.Stream[F, String] = Formatter.format[F](result)
+          Ok(formattedValues)
         case Left(_ @ InvalidRequest(message)) => BadRequest(message)
+        case Left(_ @ GeneralError(message)) => BadRequest(message)
         case Left(_) => InternalServerError("Something went wrong to the server")
       }
     }
 
   def endpoint: HttpRoutes[F] = getPrimeNumber
 
+}
+
+object Formatter {
+  def format[F[_]](streamInput : fs2.Stream[F, PrimeNumberResponse] ): fs2.Stream[F, String] =
+    streamInput.map(_.value.toString).intersperse(",")
 }
 
 object PrimeNumberEndpoint {

@@ -37,3 +37,6 @@ lazy val gondor =
           scalaCompilers
     )
     .dependsOn(protobuf)
+
+addCommandAlias("mordor", ";clean ;compile ;project mordor ;run")
+addCommandAlias("gondor", ";clean ;compile ;project gondor ;run")

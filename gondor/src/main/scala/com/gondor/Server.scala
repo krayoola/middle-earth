@@ -22,11 +22,11 @@ object Server {
   ): Resource[F, Server] =
     for {
       config <- Settings.Config.load[F](config)
-      gprpcServer <- NettyChannelBuilder
+      grpcChannel <- NettyChannelBuilder
         .forAddress(config.server.host, config.server.port)
         .usePlaintext() // use plainText for now..
         .resource[F]
-      grpcService <- PrimeNumberServiceFs2Grpc.stubResource[F](gprpcServer)
+      grpcService <- PrimeNumberServiceFs2Grpc.stubResource[F](grpcChannel)
       pnGrpcRepo = PrimeNumberGrpcRepository[F](grpcService)
       pnService = PrimeNumberService[F](pnGrpcRepo)
       primeNumberEndpoint = PrimeNumberEndpoint[F](pnService)

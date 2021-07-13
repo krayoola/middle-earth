@@ -1,16 +1,16 @@
 package com.gondor.service
-import cats.Applicative
 import cats.data.EitherT
 import cats.effect.kernel.Sync
+import cats.{Applicative, ApplicativeError}
 import com.gondor.repository.PrimeNumberRepository
 import com.gondor.service.Validator.PrimeNumberDomainRequest
 import com.service.prime.{PrimeNumberRequest, PrimeNumberResponse}
 
-class PrimeNumberService[F[_]: Sync](grpcService: PrimeNumberRepository[F]) extends PrimeNumberServiceAlgebra[F] {
+class PrimeNumberService[F[_]: Sync](grpcService: PrimeNumberRepository[F])(implicit F: ApplicativeError[F, Throwable]) extends PrimeNumberServiceAlgebra[F] {
   def getPrimeNumbers(maxNumberRange: Int): EitherT[F, PrimeNumberDomainRequest, fs2.Stream[F, PrimeNumberResponse]] =
     for {
       result <- Validator.validateClientRequest[F](maxNumberRange)
-      response <- EitherT.rightT(grpcService.requestForPrimeNumbers(PrimeNumberRequest(result.number)))
+      response <- EitherT.rightT(grpcService.requestForPrimeNumbers(PrimeNumberRequest(result.number))) // handle error here please..
     } yield response
 }
 
@@ -31,4 +31,5 @@ object Validator {
   sealed trait PrimeNumberDomainRequest
   case class ValidatedRequest(number: Int) extends PrimeNumberDomainRequest
   case class InvalidRequest(message: String) extends PrimeNumberDomainRequest
+  case class GeneralError(message: String) extends Throwable(message) with PrimeNumberDomainRequest
 }
