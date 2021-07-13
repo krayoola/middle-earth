@@ -1,29 +1,14 @@
 package com.mordor
 
-import cats.effect.IOApp
-import cats.effect.IO
-import io.grpc.ServerServiceDefinition
-import com.service.prime.PrimeNumberServiceFs2Grpc
-import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
-import fs2.grpc.syntax.all._
-import cats.effect.kernel.Async
+import cats.effect.{ExitCode, IO, IOApp}
 object Main extends IOApp.Simple {
 
-  val primeNumberService =
-    PrimeNumberServiceFs2Grpc.bindServiceResource[IO](
-      new PrimeNumberServiceModule()
-    )
-
-  def run: IO[Unit] = {
-    val service = primeNumberService.use { service =>
-      NettyServerBuilder
-        .forPort(9999)
-        .addService(service)
-        .resource[IO](Async[IO])
-        .evalMap(server => IO(server.start()))
-        .useForever
+  def run: IO[Unit] =   Server.buildServer[IO]()
+    .evalMap( server => IO(server.start()))
+    .use(_ => IO.never)
+    .attempt
+    .map {
+      case Left(_)  => ExitCode.Error // TODO: show error later
+      case Right(_) => ExitCode.Success
     }
-
-    service >> IO.unit
-  }
 }

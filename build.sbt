@@ -1,11 +1,10 @@
 import Dependencies._
 
-ThisBuild / organization := "com.mordor"
 ThisBuild / scalaVersion := "2.13.6"
 
 lazy val root = project
   .in(file("."))
-  .aggregate(protobuf, mordor)
+  .aggregate(protobuf, mordor, gondor)
 
 lazy val protobuf =
   project
@@ -15,9 +14,14 @@ lazy val protobuf =
 lazy val mordor =
   project
     .in(file("mordor"))
+    .enablePlugins(JavaAppPackaging)
+    .enablePlugins(DockerPlugin)
     .settings(
+      organization := "com.mordor",
+      name := "mordor",
+      version := "0.0.1-SNAPSHOT",
       libraryDependencies ++=
-        catsEffect ++
+        pureConfig ++
           grpc ++
           fs2 ++
           scalaCompilers
@@ -27,7 +31,12 @@ lazy val mordor =
 lazy val gondor =
   project
     .in(file("gondor"))
+    .enablePlugins(JavaAppPackaging)
+    .enablePlugins(DockerPlugin)
     .settings(
+      organization := "com.gondor",
+      name := "gondor",
+      version := "0.0.1-SNAPSHOT",
       libraryDependencies ++=
         pureConfig ++
         logback ++
@@ -40,3 +49,5 @@ lazy val gondor =
 
 addCommandAlias("mordor", ";clean ;compile ;project mordor ;run")
 addCommandAlias("gondor", ";clean ;compile ;project gondor ;run")
+addCommandAlias("dockerGondor", ";clean ;compile ;project gondor ;docker:publishLocal")
+addCommandAlias("dockerMordor", ";clean ;compile ;project gondor ;docker:publishLocal")

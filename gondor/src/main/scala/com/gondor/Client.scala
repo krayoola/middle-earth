@@ -15,7 +15,7 @@ import org.http4s.server.Server
 import org.http4s.server.middleware.Logger
 import scala.concurrent.ExecutionContext.global
 
-object Server {
+object Client {
 
   private def buildApplication[F[_]: Async](
       config: String

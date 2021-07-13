@@ -4,7 +4,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 
 object Main extends IOApp.Simple {
 
-  def run: IO[Unit] = Server
+  def run: IO[Unit] = Client
     .buildServer[IO]()
     .use(_ => IO.never)
     .attempt
