@@ -43,6 +43,7 @@ lazy val gondor =
         http4s ++
           grpc ++
           fs2 ++
+          munit ++
           scalaCompilers
     )
     .dependsOn(protobuf)
