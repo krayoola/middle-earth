@@ -1,16 +1,16 @@
 package com.gondor.service
-import cats.data.EitherT
+import cats.ApplicativeError
 import cats.effect.kernel.Sync
-import cats.{Applicative, ApplicativeError}
+import com.gondor.model.ApplicationError
 import com.gondor.repository.PrimeNumberRepository
-import com.gondor.service.Validator.PrimeNumberDomainRequest
 import com.service.prime.{PrimeNumberRequest, PrimeNumberResponse}
+import fs2.Stream
 
 class PrimeNumberService[F[_]: Sync](grpcService: PrimeNumberRepository[F])(implicit F: ApplicativeError[F, Throwable]) extends PrimeNumberServiceAlgebra[F] {
-  def getPrimeNumbers(maxNumberRange: Int): EitherT[F, PrimeNumberDomainRequest, fs2.Stream[F, PrimeNumberResponse]] =
+
+  def getPrimeNumbers(maxNumberRange: Int): Stream[F, Either[ApplicationError, PrimeNumberResponse]] =
     for {
-      result <- Validator.validateClientRequest[F](maxNumberRange)
-      response <- EitherT.rightT(grpcService.requestForPrimeNumbers(PrimeNumberRequest(result.number))) // handle error here please..
+      response <- grpcService.requestForPrimeNumbers(PrimeNumberRequest(maxNumberRange))
     } yield response
 }
 
@@ -19,17 +19,5 @@ object PrimeNumberService {
 }
 
 trait PrimeNumberServiceAlgebra[F[_]] {
-  def getPrimeNumbers(maxNumberRange: Int):  EitherT[F, PrimeNumberDomainRequest, fs2.Stream[F, PrimeNumberResponse]]
-}
-
-// TODO move this validator
-object Validator {
-  def validateClientRequest[F[_]: Applicative](value: Int): EitherT[F, InvalidRequest, ValidatedRequest] = {
-    EitherT.cond(value > 0, ValidatedRequest(value), InvalidRequest("Invalid input, Input should not be less than 0 integer value"))
-  }
-
-  sealed trait PrimeNumberDomainRequest
-  case class ValidatedRequest(number: Int) extends PrimeNumberDomainRequest
-  case class InvalidRequest(message: String) extends PrimeNumberDomainRequest
-  case class GeneralError(message: String) extends Throwable(message) with PrimeNumberDomainRequest
+  def getPrimeNumbers(maxNumberRange: Int):  Stream[F, Either[ApplicationError, PrimeNumberResponse]]
 }
