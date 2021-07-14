@@ -11,6 +11,7 @@ import org.http4s.dsl.Http4sDsl
 class PrimeNumberEndpoint[F[_]: Concurrent](primeNumberService: PrimeNumberServiceAlgebra[F])(implicit F: ApplicativeError[F, Throwable])
     extends Http4sDsl[F] {
 
+  // pure Stream approach
   private def getPrimeNumber: HttpRoutes[F] =
     HttpRoutes.of[F] { case GET -> Root / "prime" / CustomIntVar(intInputValue) =>
       Ok(primeNumberService.getPrimeNumbers(intInputValue).map {
@@ -20,6 +21,7 @@ class PrimeNumberEndpoint[F[_]: Concurrent](primeNumberService: PrimeNumberServi
       }.intersperse(","))
     }
 
+  // EitherT approach
   private def getPrimeNumberV2: HttpRoutes[F] =
     HttpRoutes.of[F] { case GET -> Root / "prime" / "v2" / IntVar(intInputValue) =>
       primeNumberService.getPrimeNumbersViaEitherT(intInputValue).value.flatMap {
@@ -34,12 +36,13 @@ class PrimeNumberEndpoint[F[_]: Concurrent](primeNumberService: PrimeNumberServi
       }
     }
 
+  // TODO: If we have time implement a circuit breaker approach
   private def getPrimeNumberV3: HttpRoutes[F] =
     HttpRoutes.of[F] { case GET -> Root / "prime" / "v3" / IntVar(_) =>
-      // TODO: If we have time implement a circuit breaker approach
       NotImplemented("API under construction")
     }
 
+  // We can wrap it with GZip middleware for better compression, if needed..
   def endpoint: HttpRoutes[F] = getPrimeNumber <+> getPrimeNumberV2 <+> getPrimeNumberV3
 
 }
