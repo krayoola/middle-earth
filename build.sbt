@@ -2,7 +2,7 @@ import Dependencies._
 
 ThisBuild / scalaVersion := "2.13.6"
 
-lazy val root = project
+lazy val middleEarth = project
   .in(file("."))
   .aggregate(protobuf, mordor, gondor)
 
