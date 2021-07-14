@@ -2,7 +2,7 @@ package com.gondor.repository
 
 import cats.MonadError
 import cats.effect.kernel.Sync
-import com.gondor.model.{ApplicationError, GeneralError, GondorNumberResponse, PrimeNumberDomainRequest}
+import com.gondor.model.{ApplicationError, GeneralError, GondorNumberResponse, PrimeNumberDomain}
 import com.service.prime.{PrimeNumberRequest, PrimeNumberServiceFs2Grpc}
 import io.grpc.Metadata
 
@@ -16,8 +16,10 @@ class PrimeNumberGrpcRepository[F[_]](grpcService: PrimeNumberServiceFs2Grpc[F, 
       case Left(error) =>  fs2.Stream(Left(buildGenerelError(error)))
     }
 
-  def maybeGondorResponseOrGeneralError(primeNumberRequest: PrimeNumberRequest): fs2.Stream[F, PrimeNumberDomainRequest] =
+  def maybeGondorResponseOrGeneralError(primeNumberRequest: PrimeNumberRequest): fs2.Stream[F, PrimeNumberDomain] =
     grpcService.generatePrimeNumber(primeNumberRequest, new Metadata())
+      .attempt
+      .rethrow
       .map( v => GondorNumberResponse(v.value))
       .handleErrorWith {
         case error => fs2.Stream(buildGenerelError(error))
@@ -30,5 +32,5 @@ object PrimeNumberGrpcRepository {
 
 trait PrimeNumberRepository[F[_]] {
   def eitherGondorResponseOrApplicationError(primeNumberRequest: PrimeNumberRequest): fs2.Stream[F, Either[ApplicationError, GondorNumberResponse]]
-  def maybeGondorResponseOrGeneralError(primeNumberRequest: PrimeNumberRequest): fs2.Stream[F, PrimeNumberDomainRequest]
+  def maybeGondorResponseOrGeneralError(primeNumberRequest: PrimeNumberRequest): fs2.Stream[F, PrimeNumberDomain]
 }

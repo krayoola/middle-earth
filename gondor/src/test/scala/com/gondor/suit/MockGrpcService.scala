@@ -26,6 +26,12 @@ final case object BoomError extends Throwable("boom!")
 class FailMockGrpcService(error: Throwable) extends PrimeNumberServiceFs2Grpc[IO, Metadata] {
   override def generatePrimeNumber(request: PrimeNumberRequest, ctx: Metadata): fs2.Stream[IO, PrimeNumberResponse] = {
     Stream.empty.append(Stream.raiseError[IO](error))
-
   }
 }
+
+class InterruptibleMockGrpcService(headStream: Stream[IO, PrimeNumberResponse], error: Throwable, tailStream: Option[Stream[IO, PrimeNumberResponse]]) extends PrimeNumberServiceFs2Grpc[IO, Metadata] {
+  override def generatePrimeNumber(request: PrimeNumberRequest, ctx: Metadata): fs2.Stream[IO, PrimeNumberResponse] = {
+    headStream ++ Stream.raiseError[IO](error) ++ tailStream.fold(Stream.apply[IO, PrimeNumberResponse]())(v => v.covary[IO])
+  }
+}
+

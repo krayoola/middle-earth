@@ -1,13 +1,14 @@
 package com.gondor.endpoint
 
+import cats.ApplicativeError
 import cats.effect.Concurrent
 import cats.implicits._
-import com.gondor.model.{ApplicationError, GeneralError, GondorNumberResponse, InvalidRequest}
+import com.gondor.model.{ApplicationError, GeneralError, GondorNumberResponse, Invalid}
 import com.gondor.service.PrimeNumberServiceAlgebra
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 
-class PrimeNumberEndpoint[F[_]: Concurrent](primeNumberService: PrimeNumberServiceAlgebra[F])
+class PrimeNumberEndpoint[F[_]: Concurrent](primeNumberService: PrimeNumberServiceAlgebra[F])(implicit F: ApplicativeError[F, Throwable])
     extends Http4sDsl[F] {
 
   private def getPrimeNumber: HttpRoutes[F] =
@@ -21,19 +22,25 @@ class PrimeNumberEndpoint[F[_]: Concurrent](primeNumberService: PrimeNumberServi
 
   private def getPrimeNumberV2: HttpRoutes[F] =
     HttpRoutes.of[F] { case GET -> Root / "prime" / "v2" / IntVar(intInputValue) =>
-      primeNumberService.getPrimeNumbersV2(intInputValue).value.flatMap {
+      primeNumberService.getPrimeNumbersViaEitherT(intInputValue).value.flatMap {
         case Right(result) =>
             val collected = result.broadcastThrough[F, String] (
               _.collect { case positive: GondorNumberResponse => positive.number.toString }.through(_.intersperse(",")),
               _.collect { case negative: ApplicationError => negative.message }
             )
           Ok(collected)
-        case Left(_ @ InvalidRequest(message)) => BadRequest(message)
+        case Left(_ @ Invalid(message)) => BadRequest(message)
         case Left(_) => InternalServerError("Something went wrong to the server")
       }
     }
 
-  def endpoint: HttpRoutes[F] = getPrimeNumber <+> getPrimeNumberV2
+  private def getPrimeNumberV3: HttpRoutes[F] =
+    HttpRoutes.of[F] { case GET -> Root / "prime" / "v3" / IntVar(_) =>
+      // TODO: If we have time implement a circuit breaker approach
+      NotImplemented("API under construction")
+    }
+
+  def endpoint: HttpRoutes[F] = getPrimeNumber <+> getPrimeNumberV2 <+> getPrimeNumberV3
 
 }
 

@@ -14,16 +14,15 @@ class PrimeNumberService[F[_]: Sync](grpcService: PrimeNumberRepository[F])(impl
       response <- grpcService.eitherGondorResponseOrApplicationError(PrimeNumberRequest(maxNumberRange))
     } yield response
 
-  def getPrimeNumbersV2(maxNumberRange: Int): EitherT[F, ApplicationError, fs2.Stream[F, PrimeNumberDomainRequest]] =
+  def getPrimeNumbersViaEitherT(maxNumberRange: Int): EitherT[F, ApplicationError, fs2.Stream[F, PrimeNumberDomain]] =
     for {
       result <- validateClientRequest(maxNumberRange)
-      // TODO: Transform properly, right now it works since error is hidden within the Stream that we captured on next layer.
+      // TODO: Probably Transform properly, right now it works since error is hidden within the Stream that we captured on next layer.
       response <- EitherT.rightT(grpcService.maybeGondorResponseOrGeneralError(PrimeNumberRequest(result.number)))
     } yield response
 
-
-  def validateClientRequest(value: Int): EitherT[F, InvalidRequest, ValidatedRequest] = {
-    EitherT.cond(value > 0, ValidatedRequest(value), InvalidRequest("Invalid input, Input should not be less than 0 integer value"))
+  def validateClientRequest(value: Int): EitherT[F, Invalid, ValidatedRequest] = {
+    EitherT.cond(value > 0, ValidatedRequest(value), Invalid("Invalid input, Input should not be less than 0 integer value"))
   }
 }
 
@@ -33,5 +32,5 @@ object PrimeNumberService {
 
 trait PrimeNumberServiceAlgebra[F[_]] {
   def getPrimeNumbers(maxNumberRange: Int): Stream[F, Either[ApplicationError, GondorNumberResponse]]
-  def getPrimeNumbersV2(maxNumberRange: Int): EitherT[F, ApplicationError, fs2.Stream[F, PrimeNumberDomainRequest]]
+  def getPrimeNumbersViaEitherT(maxNumberRange: Int): EitherT[F, ApplicationError, fs2.Stream[F, PrimeNumberDomain]]
 }
