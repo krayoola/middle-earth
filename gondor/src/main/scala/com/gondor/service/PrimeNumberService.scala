@@ -7,7 +7,7 @@ import com.gondor.repository.PrimeNumberRepository
 import com.service.prime.PrimeNumberRequest
 import fs2.Stream
 
-class PrimeNumberService[F[_]: Sync](grpcService: PrimeNumberRepository[F])(implicit F: ApplicativeError[F, Throwable]) extends PrimeNumberServiceAlgebra[F] {
+class PrimeNumberService[F[_]: Sync](grpcService: PrimeNumberRepository[F]) extends PrimeNumberServiceAlgebra[F] {
 
   def getPrimeNumbers(maxNumberRange: Int): Stream[F, Either[ApplicationError, GondorNumberResponse]] =
     for {
