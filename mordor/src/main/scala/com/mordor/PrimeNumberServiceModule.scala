@@ -12,7 +12,7 @@ import io.grpc.Metadata
 
 class PrimeNumberServiceModule[F[_]] extends PrimeNumberServiceFs2Grpc[F, Metadata] {
 
-  def isPrime(n: Int): Boolean = {
+   private def isPrime(n: Int): Boolean = {
     if(n <= 1) false
     else Range(2, n - 1).filter(n % _ == 0).length == 0
   }

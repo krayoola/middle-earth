@@ -24,6 +24,7 @@ lazy val mordor =
         pureConfig ++
           grpc ++
           fs2 ++
+          munit ++
           scalaCompilers
     )
     .dependsOn(protobuf)
@@ -50,5 +51,9 @@ lazy val gondor =
 
 addCommandAlias("mordor", ";clean ;compile ;project mordor ;run")
 addCommandAlias("gondor", ";clean ;compile ;project gondor ;run")
+
 addCommandAlias("dockerGondor", ";clean ;compile ;project gondor ;docker:publishLocal")
-addCommandAlias("dockerMordor", ";clean ;compile ;project gondor ;docker:publishLocal")
+addCommandAlias("dockerMordor", ";clean ;compile ;project mordor ;docker:publishLocal")
+
+addCommandAlias("testGondor", ";clean ;compile ;project gondor ;test")
+addCommandAlias("testMordor", ";clean ;compile ;project mordor ;test")
