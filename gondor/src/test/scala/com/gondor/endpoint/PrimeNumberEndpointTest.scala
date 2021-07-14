@@ -1,13 +1,16 @@
 package com.gondor.endpoint
 
 import cats.effect.IO
-import com.gondor.model.GondorNumberResponse
+import com.gondor.model.{ApplicationError, GondorNumberResponse, PrimeNumberDomain}
 import com.gondor.suit.{EndpointEitherTContext, EndpointStreamContext}
-import munit.{CatsEffectSuite}
+import fs2.Stream
+import munit.CatsEffectSuite
+import org.http4s._
+import org.http4s.headers.`Transfer-Encoding`
 import org.http4s.implicits.{http4sLiteralsSyntax, _}
-import org.http4s.{Method, Request, Status}
 
 class PrimeNumberEndpointTest extends CatsEffectSuite {
+  val chunked: Header.Raw = `Transfer-Encoding`(TransferCoding.chunked).toRaw1
 
   test("prime api should be available") {
     new EndpointStreamContext[IO] {
@@ -15,13 +18,36 @@ class PrimeNumberEndpointTest extends CatsEffectSuite {
       val response = createEndpoint(expectedStreamOfGondorResponses).orNotFound.run(
         Request(method = Method.GET, uri = uri"/prime/5")
       ).unsafeRunSync
-        assertEquals(response.status, Status.Ok)
+
+      val transferEncoding = response.headers.headers.find(_ == chunked).get
+      assertEquals(transferEncoding, chunked)
+      assertEquals(response.status, Status.Ok)
+    }
+  }
+
+  test("prime api should not accept negative integer values") {
+    new EndpointStreamContext[IO] {
+      val expectedStreamOfGondorResponses = Stream.empty.covaryAll[IO,Either[ApplicationError, GondorNumberResponse]]
+      val response = createEndpoint(expectedStreamOfGondorResponses).orNotFound.run(
+        Request(method = Method.GET, uri = uri"/prime/-1")
+      ).unsafeRunSync
+      assertEquals(response.status, Status.NotFound)
+    }
+  }
+
+  test("prime api should not accept string values") {
+    new EndpointStreamContext[IO] {
+      val expectedStreamOfGondorResponses = createEitherStream(Right(GondorNumberResponse(2)), Right(GondorNumberResponse(3)))
+      val response = createEndpoint(expectedStreamOfGondorResponses).orNotFound.run(
+        Request(method = Method.GET, uri = uri"/prime/aa")
+      ).unsafeRunSync
+      assertEquals(response.status, Status.NotFound)
     }
   }
 
   test("prime api /v3 should be NotImplemented") {
     new EndpointStreamContext[IO] {
-      val expectedStreamOfGondorResponses = createEitherStream(Right(GondorNumberResponse(2)), Right(GondorNumberResponse(3)))
+      val expectedStreamOfGondorResponses = Stream.empty.covaryAll[IO,Either[ApplicationError, GondorNumberResponse]]
       val response = createEndpoint(expectedStreamOfGondorResponses).orNotFound.run(
         Request(method = Method.GET, uri = uri"/prime/v3/5")
       ).unsafeRunSync
@@ -31,7 +57,7 @@ class PrimeNumberEndpointTest extends CatsEffectSuite {
 
   test("unsupported should be NotFound") {
     new EndpointStreamContext[IO] {
-      val expectedStreamOfGondorResponses = createEitherStream(Right(GondorNumberResponse(2)), Right(GondorNumberResponse(3)))
+      val expectedStreamOfGondorResponses = Stream.empty.covaryAll[IO,Either[ApplicationError, GondorNumberResponse]]
       val response = createEndpoint(expectedStreamOfGondorResponses).orNotFound.run(
         Request(method = Method.GET, uri = uri"/unsupported/api")
       ).unsafeRunSync
@@ -39,17 +65,14 @@ class PrimeNumberEndpointTest extends CatsEffectSuite {
     }
   }
 
-  test("prime api /v2 should be available [pending]") {
+  test("prime api /v2 should be available") {
     new EndpointEitherTContext[IO] {
-//       TODO instantiate an EitherT having problem with Applicative implicit
-//      val expectedStreamOfGondorResponses = createDomainStream(GondorNumberResponse(2), GondorNumberResponse(3))
-//      val response = createEndpoint(expectedStreamOfGondorResponses).orNotFound.run(
-//        Request(method = Method.GET, uri = uri"/prime/v2/5")
-//      ).unsafeRunSync
-//      assertEquals(response.status, Status.Ok)
+      val expectedStreamOfGondorResponses = Stream.empty.covaryAll[IO,PrimeNumberDomain]
+      val response = createEndpoint(expectedStreamOfGondorResponses).orNotFound.run(
+        Request(method = Method.GET, uri = uri"/prime/v2/5")
+      ).unsafeRunSync
+      assertEquals(response.status, Status.Ok)
     }
   }
-
-
 
 }
