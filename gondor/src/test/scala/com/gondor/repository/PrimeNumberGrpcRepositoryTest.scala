@@ -2,7 +2,7 @@ package com.gondor.repository
 
 import cats.effect.IO
 import com.gondor.model.{ApplicationError, GeneralError, GondorNumberResponse}
-import com.gondor.suit.{BoomError, FailMockGrpcService, InterruptibleMockGrpcService, MockGrpcService}
+import com.gondor.suite.{BoomError, FailMockGrpcService, InterruptibleMockGrpcService, MockGrpcService}
 import com.service.prime.{PrimeNumberRequest, PrimeNumberResponse}
 import fs2.Stream
 import munit.CatsEffectSuite

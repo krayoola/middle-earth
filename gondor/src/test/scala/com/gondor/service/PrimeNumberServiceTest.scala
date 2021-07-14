@@ -2,7 +2,7 @@ package com.gondor.service
 
 import cats.effect.IO
 import com.gondor.model.{GeneralError, GondorNumberResponse, Invalid}
-import com.gondor.suit.{EitherTPrimeNumberServiceContext, StreamPrimeNumberServiceContext}
+import com.gondor.suite.{EitherTPrimeNumberServiceContext, StreamPrimeNumberServiceContext}
 import munit.CatsEffectSuite
 
 class PrimeNumberServiceTest extends CatsEffectSuite {

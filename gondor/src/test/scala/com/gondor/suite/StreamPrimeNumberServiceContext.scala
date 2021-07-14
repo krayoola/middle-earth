@@ -1,4 +1,4 @@
-package com.gondor.suit
+package com.gondor.suite
 
 import cats.effect.{IO, Sync}
 import com.gondor.model.{ApplicationError, GondorNumberResponse, PrimeNumberDomain}

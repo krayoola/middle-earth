@@ -1,4 +1,4 @@
-package com.gondor.suit
+package com.gondor.suite
 
 import cats.effect.IO
 import com.service.prime.{PrimeNumberRequest, PrimeNumberResponse, PrimeNumberServiceFs2Grpc}

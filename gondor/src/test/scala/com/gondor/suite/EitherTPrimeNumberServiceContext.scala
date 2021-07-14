@@ -1,4 +1,4 @@
-package com.gondor.suit
+package com.gondor.suite
 
 import cats.data.EitherT
 import cats.effect.{IO, Sync}

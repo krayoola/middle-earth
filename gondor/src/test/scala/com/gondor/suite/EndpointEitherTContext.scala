@@ -1,4 +1,4 @@
-package com.gondor.suit
+package com.gondor.suite
 
 import cats.Applicative
 import cats.data.EitherT
