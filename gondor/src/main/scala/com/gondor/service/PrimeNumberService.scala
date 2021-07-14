@@ -17,7 +17,7 @@ class PrimeNumberService[F[_]: Sync](grpcService: PrimeNumberRepository[F])(impl
   def getPrimeNumbersViaEitherT(maxNumberRange: Int): EitherT[F, ApplicationError, fs2.Stream[F, PrimeNumberDomain]] =
     for {
       result <- validateClientRequest(maxNumberRange)
-      // TODO: Probably Transform properly, right now it works since error is hidden within the Stream that we captured on next layer.
+      // TODO: Probably Transform/Lift properly, right now it works since error is hidden within the Stream that we captured on next layer.
       response <- EitherT.rightT(grpcService.maybeGondorResponseOrGeneralError(PrimeNumberRequest(result.number)))
     } yield response
 
