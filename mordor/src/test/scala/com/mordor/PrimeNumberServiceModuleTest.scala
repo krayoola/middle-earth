@@ -1,11 +1,17 @@
 package com.mordor
 
-import cats.effect.{IO, Sync}
+import cats.effect.{Async, IO}
+import com.mordor.MordorServerStatus.INVALID_INPUT
 import com.service.prime.{PrimeNumberRequest, PrimeNumberResponse}
-import io.grpc.Metadata
+import io.grpc.{Metadata, Status}
 import munit.CatsEffectSuite
 
 class PrimeNumberServiceModuleTest extends CatsEffectSuite {
+
+  test("should return error when provided with negative input number") {
+    val result = primeNumberService[IO](-1)
+    result.unwrap.intercept[Throwable].map(v => v.getMessage) assertEquals buildError(INVALID_INPUT)
+  }
 
   test("should generate proper prime numbers when input value is not a prime number") {
     val result = primeNumberService[IO](4)
@@ -30,15 +36,12 @@ class PrimeNumberServiceModuleTest extends CatsEffectSuite {
 
   test("should not generate value when input value is 0") {
     val result = primeNumberService[IO](0)
-    result.unwrap assertEquals List.empty
+    result.unwrap.intercept[Throwable].map(v => v.getMessage) assertEquals buildError(INVALID_INPUT)
   }
 
-  test("should not generate value when input value negative integer value") {
-    val result = primeNumberService[IO](-1)
-    result.unwrap assertEquals List.empty
-  }
+  def buildError(status: Status) = s"${status.getCode.toString}: ${status.getDescription}"
 
-  def primeNumberService[F[_]: Sync](
+  def primeNumberService[F[_]: Async](
       number: Int
   ): fs2.Stream[F, PrimeNumberResponse] =
     PrimeNumberServiceModule[F].generatePrimeNumber(
