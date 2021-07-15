@@ -1,14 +1,14 @@
 # Welcome to Middle-earth
 
-An client and server applications showcasing Streaming of prime numeric values from a GRPC server, up to the given maximum value.
+An client and server applications showcasing Streaming of prime numeric values from a GRPC server.
 
 ## Components
 
-mordor - `prime-number-server` GRPC service that produce prime numbers up to the given value
+mordor - `prime-number-server` A GRPC service that produce prime numbers up to the given value
 
 gondor - `proxy-service` A http streaming service that is exposed to clients, and accepts a numeric value which being forward to mordor service
 
-protobuf - GRPC contract protocol used by both service to communicate to each other
+protobuf - GRPC contract protocol used by both services to communicate to each other
 
 ## Technology stack
 
@@ -17,13 +17,13 @@ protobuf - GRPC contract protocol used by both service to communicate to each ot
 - Http4s - Http web service library
 - fs2.Streams - Streaming process library
 - fs2 grpc - grpc implementation built on top of cats and fs2
-- munit/ - unit test library
+- munit - unit test library
 - pureConfig - typed configuration sourcing library
 
 ## High level overview
 
 ```docs
-                           Gondor                                    Mordor
+    Internet                 Gondor                                    Mordor
                | Endpoint -> Service -> Repository --┐             |
  clients  <->  |                                     |-->  grpc <--|  mordor.Service
                | Endpoint <- Service <- Repository <-┘             |
@@ -31,7 +31,7 @@ protobuf - GRPC contract protocol used by both service to communicate to each ot
 
 ### Endpoint
 
-layer that is responsible for receive and serve http request and response
+layer that is responsible for receiving and serving http request and response
 
 ### Service
 
@@ -104,7 +104,7 @@ response:
 2,3,5,7,11,13,17
 ```
 
-NOTE: response should be compressed with `GZip`, However Curl is not showing it.
+_NOTE: response should be compressed with `GZip`, However Curl is not showing it, However its in demo below._
 
 ### How to run Gondor
 
@@ -156,6 +156,14 @@ sbt testMordor
 
 ## Implementation
 
+The tools and libraries I chosen and picked were mainly because of my taste and what I know that will do the job, and my likeness on working in a functional code base.
+
+As everything is expressed in functional way (I hope), It would be easy to comprehend with the code, extract/change/modify any business request.
+
+Also testing every layer is much easier since most of the function are pure, and we are sure that ever operation are executed at the end of the world.
+
+Why I choose fs2.Stream over other? Aside from its being a purely functional streaming, For me its a great fit to the ecosystem since fs2.stream is the heart of http4s, I say integration is easy. aside from that since we are serving clients on the internet having a pull based stream on this requirement is much more fitting to avoid any network and buffer overload.
+
 ## Technology alternatives
 
 Scala - Alternatively we can use any programming language/libraries that fits us, and with rich GRPC support such as (Go, Node[type-script/javascript], Java, Rust etc).
@@ -178,15 +186,22 @@ PureConfig - Typesafe config
 
 - Separation of mono this repo on a 3 different repositories to have a parallel development.
 
-- Enrich unit tests for both services.
+- Enrich unit tests with more assertions and cases for both services.
 
 - Enhance test using property-based testing libraries such as ScalaCheck etc.
 
 - Create a black box/functional testing.
 
-- Give some more love on the Mordor code base.
+- Give some love on the Mordor code base.
 
 - Create a web app (probably built on react/vue:type-script) for better stream response representation.
+
+- add logging libraries such as log4cats etc
+
+- Apply Authentication and Authentication Layer on both Gondor and Mordor Services
+
+  - TLS
+  - Session based/Cookie based
 
 ## Demo
 
