@@ -188,11 +188,7 @@ PureConfig - [Typesafe config](https://github.com/lightbend/config)
 
 - CI/Pipeline integration (Jenkins, Travis or Github actions etc)
 
-<<<<<<< HEAD
 - Separation of this mono repo into 3 different repositories to enable a parallel contribution from other developers.
-=======
-- Separation of this mono  repo into 3 different repositories to enable a parallel contribution from other developers.
->>>>>>> ced4d24e97a2637d3c34d9fef4e11bab685377e7
 
 - Enrich unit tests with more assertions and cases for both services.
 
