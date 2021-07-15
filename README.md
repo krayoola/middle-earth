@@ -1,12 +1,12 @@
 # Welcome to Middle-earth
 
-An client and server applications showcasing Streaming of prime numeric values from a GRPC server.
+A client-server application showcasing streaming of prime numeric values from a GRPC server.
 
 ## Components
 
-mordor - `prime-number-server` A GRPC service that produce prime numbers up to the given value
+mordor - `prime-number-server` A GRPC protocol serving service that produce prime numbers in a streaming manner.
 
-gondor - `proxy-service` A http streaming service that is exposed to clients, and accepts a numeric value which being forward to mordor service
+gondor - `proxy-service` A http streaming service that serves clients requests and accepts numeric value which is then being forwarded to mordor service.
 
 protobuf - GRPC contract protocol used by both services to communicate to each other
 
@@ -24,26 +24,26 @@ protobuf - GRPC contract protocol used by both services to communicate to each o
 
 ```docs
     Internet                 Gondor                                    Mordor
-               | Endpoint -> Service -> Repository --┐             |
- clients  <->  |                                     |-->  grpc <--|  mordor.Service
-               | Endpoint <- Service <- Repository <-┘             |
+               | Endpoint -> Service -> Repository -┐             |
+ clients  <->  |                                    |-->  grpc <--|  mordor.Service
+               | Endpoint <- Service <- Repository <┘             |
 ```
 
 ### Endpoint
 
-layer that is responsible for receiving and serving http request and response
+layer that is responsible for receiving and serving http request/response.
 
 ### Service
 
-layer that is responsible for any business logic of the application(e.g change of sequence of call, some validation etc)
+layer that is responsible for any business logic of the application (e.g chaining of events, change of sequence of call, some validation etc)
 
 ### Repository
 
-layer responsible for communication and other activities related to the external modules.
+layer responsible for communication and other activities on external modules.
 
 ### grpc
 
-protocol used to communicate both gondor and mordor service
+protocol used to communicate for both gondor and mordor service
 
 ### mordor.Service
 
@@ -51,7 +51,7 @@ layer responsible for the computation related to the request
 
 ## Mordor
 
-Mordor `prime-number-server`, is responsible for prime number generation that is requested by Client. It's main function is to abstract any computation away from the proxy server a.k.a Gondor in a streaming fashion.
+Mordor `prime-number-server`, is responsible for prime number generation that will be stream to the client. It's main function is to abstract any computation away from the proxy server a.k.a Gondor.
 
 ### Sample request
 
@@ -69,7 +69,7 @@ sbt mordor
 
 ## Gondor
 
-Gondor `proxy-service`, is a responsible for accepting request and response from clients, and apply any necessary basic validation that can be extracted away from Mordor, and serving the response back to clients in a streaming fashion.
+Gondor `proxy-service`, is responsible for accepting request and response from clients, apply any necessary basic validation that can be extracted away from Mordor, and serving the response back to clients in a streaming fashion.
 
 ### Api exposed
 
@@ -77,6 +77,8 @@ Gondor `proxy-service`, is a responsible for accepting request and response from
   - strictly accepts positive numeric value only
 - `/prime/v2/:intValue` - [Optional solution]
   - accepts any numeric value, however gives you a response if fails the validation
+- `/prime/v3/:intValue` - [Not part of the solution(yet)]
+  - accepts any numeric value, however returns status 501 not implemented function
 
 ### Sample request
 
@@ -104,7 +106,7 @@ response:
 2,3,5,7,11,13,17
 ```
 
-_NOTE: response should be compressed with `GZip`, However Curl is not showing it, However its in demo below._
+_NOTE: response should be compressed with `GZip`, Curl is not showing it, However its shown on the demo below._
 
 ### How to run Gondor
 
@@ -156,23 +158,23 @@ sbt testMordor
 
 ## Implementation
 
-The tools and libraries I chosen and picked were mainly because of my taste and what I know that will do the job, and my likeness on working in a functional code base.
+The tools and libraries I chosen and picked were mainly because of my taste, what I know that will do the job smoothly and my likeness on working in a functional code base.
 
-As everything is expressed in functional way (I hope), It would be easy to comprehend with the code, extract/change/modify any business request.
+As everything is expressed in functional way (I hope), It will be easy to comprehend with the code and extract/change/modify/chain any business request.
 
-Also testing every layer is much easier since most of the function are pure, and we are sure that ever operation are executed at the end of the world.
+Also testing every layer of the application feels so much easier due to most of the function are composed, pure. additionally we are sure that ever operation are executed at the end of the world.
 
-Why I choose fs2.Stream over other? Aside from its being a purely functional streaming, For me its a great fit to the ecosystem since fs2.stream is the heart of http4s, I say integration is easy. aside from that since we are serving clients on the internet having a pull based stream on this requirement is much more fitting to avoid any network and buffer overload.
+Why I choose fs2.Stream over others? Aside from its being a purely functional streaming library, For me it's a great fit to the ecosystem since fs2.stream is a first class citizen of http4s. I would say integration is easy, along with their core functional abstraction under the hood, cats. also worth to mention that because of its pull based approach of streaming we mitigate any network and buffer overload also reduce any resource hungry operation. that said it fits perfectly on our requirement.
 
 ## Technology alternatives
 
-Scala - Alternatively we can use any programming language/libraries that fits us, and with rich GRPC support such as (Go, Node[type-script/javascript], Java, Rust etc).
+Scala - Alternatively we can use any programming language/libraries where we are comfortable and with rich GRPC support such as (Go, Node[type-script/javascript], Java, Rust etc).
 
 cats - ZIO, scalaZ
 
 Http4s - Akka Http, ZIO Http, PlayFramework
 
-Fs2.Streams - Akka Streams
+Fs2.Streams - Akka Streams, ZStreams
 
 Fs2 Grpc - [Akka GRPC](https://github.com/akka/akka-grpc)
 
@@ -182,28 +184,34 @@ PureConfig - [Typesafe config](https://github.com/lightbend/config)
 
 ## Improvements and recommendation
 
-- Pipeline/Action creation for CI.
+- Give some love on the Mordor code base.
 
-- Separation of mono this repo on a 3 different repositories to have a parallel development.
+- CI/Pipeline integration (Jenkins, Travis or Github actions etc)
+
+- Separation of this mono repo into 3 different repositories to enable a parallel contribution from other developers.
 
 - Enrich unit tests with more assertions and cases for both services.
 
 - Enhance test using property-based testing libraries such as [ScalaCheck](https://github.com/typelevel/scalacheck) etc.
 
-- Create a black box/functional testing.
+- black box/functional testing.
 
-- Give some love on the Mordor code base.
+- web app (probably built on [react](https://github.com/facebook/react)/[vue](https://github.com/vuejs/vue):type-script) for better stream response representation.
 
-- Create a web app (probably built on [react](https://github.com/facebook/react)/[vue](https://github.com/vuejs/vue):type-script) for better stream response representation.
+- add logging libraries such as [log4cats](https://github.com/typelevel/log4cats) etc.
 
-- add logging libraries such as [log4cats](https://github.com/typelevel/log4cats) etc
-
-- Apply Authentication and Authentication Layer on both Gondor and Mordor Services
+- Apply Authentication and Authentication Layer on both Gondor and Mordor Services.
 
   - TLS
   - Session based/Cookie based
 
 - integrate refactoring and linting tool such as [scalafix](https://github.com/scalacenter/scalafix).
+
+- Tapir Integration for API documentation.
+
+- Expose health check APIs for both services.
+
+- Create a performance testing suite using [Gatling.io](https://github.com/gatling/gatling)
 
 ## Demo
 
