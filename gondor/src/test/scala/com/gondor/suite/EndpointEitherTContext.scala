@@ -2,13 +2,13 @@ package com.gondor.suite
 
 import cats.Applicative
 import cats.data.EitherT
-import cats.effect.Concurrent
+import cats.effect.kernel.Async
 import com.gondor.endpoint.PrimeNumberEndpoint
 import com.gondor.model.{ApplicationError, GondorNumberResponse, PrimeNumberDomain}
 import com.gondor.service.PrimeNumberServiceAlgebra
 import org.http4s.HttpRoutes
 
-class EndpointEitherTContext[F[_] : Concurrent: Applicative] {
+class EndpointEitherTContext[F[_] : Async: Applicative] {
 
   def createEndpoint(expectedResponse: fs2.Stream[F, PrimeNumberDomain]): HttpRoutes[F] = {
     PrimeNumberEndpoint[F](new EitherTPrimeNumberService(expectedResponse)).endpoint

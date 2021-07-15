@@ -5,8 +5,8 @@ import com.gondor.model.{ApplicationError, GondorNumberResponse}
 import com.gondor.suite.{EndpointEitherTContext, EndpointStreamContext}
 import fs2.Stream
 import munit.CatsEffectSuite
-import org.http4s._
-import org.http4s.headers.`Transfer-Encoding`
+import org.http4s.{Header, Method, Request, Status, TransferCoding}
+import org.http4s.headers.{`Content-Encoding`, `Transfer-Encoding`}
 import org.http4s.implicits.{http4sLiteralsSyntax, _}
 
 class PrimeNumberEndpointTest extends CatsEffectSuite {

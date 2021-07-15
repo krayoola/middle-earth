@@ -1,14 +1,15 @@
 package com.gondor.endpoint
 
 import cats.ApplicativeError
-import cats.effect.Concurrent
+import cats.effect.kernel.Async
 import cats.implicits._
 import com.gondor.model.{ApplicationError, GeneralError, GondorNumberResponse, Invalid}
 import com.gondor.service.PrimeNumberServiceAlgebra
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
+import org.http4s.server.middleware.GZip
 
-class PrimeNumberEndpoint[F[_]: Concurrent](primeNumberService: PrimeNumberServiceAlgebra[F])(implicit F: ApplicativeError[F, Throwable])
+class PrimeNumberEndpoint[F[_]: Async](primeNumberService: PrimeNumberServiceAlgebra[F])(implicit F: ApplicativeError[F, Throwable])
     extends Http4sDsl[F] {
 
   // pure Stream approach
@@ -42,8 +43,7 @@ class PrimeNumberEndpoint[F[_]: Concurrent](primeNumberService: PrimeNumberServi
       NotImplemented("API under construction")
     }
 
-  // We can wrap it with GZip middleware for better compression, if needed..
-  def endpoint: HttpRoutes[F] = getPrimeNumber <+> getPrimeNumberV2 <+> getPrimeNumberV3
+  def endpoint: HttpRoutes[F] = GZip(getPrimeNumber) <+> GZip(getPrimeNumberV2) <+> getPrimeNumberV3
 
 }
 
@@ -58,6 +58,6 @@ object CustomIntVar {
 }
 
 object PrimeNumberEndpoint {
-  def apply[F[_]: Concurrent](pnr: PrimeNumberServiceAlgebra[F]) =
+  def apply[F[_]: Async](pnr: PrimeNumberServiceAlgebra[F]) =
     new PrimeNumberEndpoint[F](pnr)
 }
