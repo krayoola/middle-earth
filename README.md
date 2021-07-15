@@ -170,15 +170,15 @@ Scala - Alternatively we can use any programming language/libraries that fits us
 
 cats - ZIO, scalaZ
 
-Http4s - Akka Http, ZIO Http
+Http4s - Akka Http, ZIO Http, PlayFramework
 
-Fs2.Streams - Akka Streams, Zio Http
+Fs2.Streams - Akka Streams
 
-Fs2 Grpc - Akka GRPC
+Fs2 Grpc - [Akka GRPC](https://github.com/akka/akka-grpc)
 
-Munit - Scala test, Spec2
+Munit - [Scala test](https://github.com/scalatest/scalatest), [Specs2](https://github.com/etorreborre/specs2)
 
-PureConfig - Typesafe config
+PureConfig - [Typesafe config](https://github.com/lightbend/config)
 
 ## Improvements and recommendation
 
@@ -188,20 +188,22 @@ PureConfig - Typesafe config
 
 - Enrich unit tests with more assertions and cases for both services.
 
-- Enhance test using property-based testing libraries such as ScalaCheck etc.
+- Enhance test using property-based testing libraries such as [ScalaCheck](https://github.com/typelevel/scalacheck) etc.
 
 - Create a black box/functional testing.
 
 - Give some love on the Mordor code base.
 
-- Create a web app (probably built on react/vue:type-script) for better stream response representation.
+- Create a web app (probably built on [react](https://github.com/facebook/react)/[vue](https://github.com/vuejs/vue):type-script) for better stream response representation.
 
-- add logging libraries such as log4cats etc
+- add logging libraries such as [log4cats](https://github.com/typelevel/log4cats) etc
 
 - Apply Authentication and Authentication Layer on both Gondor and Mordor Services
 
   - TLS
   - Session based/Cookie based
+
+- integrate refactoring and linting tool such as [scalafix](https://github.com/scalacenter/scalafix).
 
 ## Demo
 
