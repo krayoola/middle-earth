@@ -1,5 +1,4 @@
 package com.gondor.service
-import cats.ApplicativeError
 import cats.data.EitherT
 import cats.effect.kernel.Sync
 import com.gondor.model._

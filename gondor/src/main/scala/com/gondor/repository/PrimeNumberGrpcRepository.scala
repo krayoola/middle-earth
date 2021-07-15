@@ -1,12 +1,12 @@
 package com.gondor.repository
 
-import cats.MonadError
+import cats.ApplicativeError
 import cats.effect.kernel.Sync
 import com.gondor.model.{ApplicationError, GeneralError, GondorNumberResponse, PrimeNumberDomain}
 import com.service.prime.{PrimeNumberRequest, PrimeNumberServiceFs2Grpc}
 import io.grpc.Metadata
 
-class PrimeNumberGrpcRepository[F[_]](grpcService: PrimeNumberServiceFs2Grpc[F, Metadata])(implicit F: MonadError[F, Throwable]) extends PrimeNumberRepository[F] {
+class PrimeNumberGrpcRepository[F[_]](grpcService: PrimeNumberServiceFs2Grpc[F, Metadata])(implicit F: ApplicativeError[F, Throwable]) extends PrimeNumberRepository[F] {
 
   private def buildGenerelError(error: Throwable) = GeneralError(s"There seems to be a problem due to : ${error.getMessage}")
 

@@ -1,6 +1,5 @@
 package com.gondor.endpoint
 
-import cats.ApplicativeError
 import cats.effect.kernel.Async
 import cats.implicits._
 import com.gondor.model.{ApplicationError, GeneralError, GondorNumberResponse, Invalid}
@@ -9,7 +8,7 @@ import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.middleware.GZip
 
-class PrimeNumberEndpoint[F[_]: Async](primeNumberService: PrimeNumberServiceAlgebra[F])(implicit F: ApplicativeError[F, Throwable])
+class PrimeNumberEndpoint[F[_]: Async](primeNumberService: PrimeNumberServiceAlgebra[F])
     extends Http4sDsl[F] {
 
   // pure Stream approach
