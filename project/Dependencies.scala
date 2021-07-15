@@ -4,7 +4,7 @@ object Dependencies {
 
   object Version {
     val CATS_EFFECT = "3.1.1"
-     val MUNIT = "1.0.5"
+    val MUNIT = "1.0.5"
     val MONADIC_FOR = "0.3.1"
     val FS2 = "3.0.6"
     val HTTP4s = "0.23.0-RC1"
