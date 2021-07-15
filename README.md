@@ -162,9 +162,11 @@ The tools and libraries I chosen and picked were mainly because of my taste, wha
 
 As everything is expressed in functional way (I hope), It will be easy to comprehend with the code and extract/change/modify/chain any business request.
 
-Also testing every layer of the application feels so much easier due to most of the function are composed, pure. additionally we are sure that ever operation are executed at the end of the world.
+Also testing every layer of the application feels so much easier due to most of the function are composed, pure. additionally we are sure that all operation are executed at the end of the application.
 
 Why I choose fs2.Stream over others? Aside from its being a purely functional streaming library, For me it's a great fit to the ecosystem since fs2.stream is a first class citizen of http4s. I would say integration is easy, along with their core functional abstraction under the hood, cats. also worth to mention that because of its pull based approach of streaming we mitigate any network and buffer overload also reduce any resource hungry operation. that said it fits perfectly on our requirement.
+
+Why Effect pattern? by doing so. we build our application by wrapping behaviors/description of an application in a effect. and be sure that it will not execute in a single place. and not execute directly that may introduce side effect, additionally we can change any execution model we like on our application.
 
 ## Technology alternatives
 
