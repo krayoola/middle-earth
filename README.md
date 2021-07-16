@@ -78,7 +78,7 @@ Gondor `proxy-service`, is responsible for accepting request and response from c
 - `/prime/v2/:intValue` - [Optional solution]
   - accepts any numeric value, however gives you a response if fails the validation
 - `/prime/v3/:intValue` - [Not part of the solution(yet)]
-  - accepts any numeric value, however returns status 501 not implemented function
+  - accepts any numeric value, however returns status 501 not implemented function response
 
 ### Sample request
 
@@ -166,7 +166,7 @@ Also testing every layer of the application feels so much easier due to most of 
 
 Why I choose fs2.Stream over others? Aside from its being a purely functional streaming library, For me it's a great fit to the ecosystem since fs2.stream is a first class citizen of http4s. I would say integration is easy, along with their core functional abstraction under the hood, cats. also worth to mention that because of its pull based approach of streaming we mitigate any network and buffer overload also reduce any resource hungry operation. that said it fits perfectly on our requirement.
 
-Why Effect pattern? by doing so. we build our application by wrapping behaviors/description of an application in a effect. and be sure that it will not execute in a single place. and not execute directly that may introduce side effect, additionally we can change any execution model we like on our application.
+Why Effect pattern? by doing so. we build our application by wrapping behaviors/description of an application in a effect. and be sure that it will execute in a single place. and will not execute directly that may introduce side effects, additionally we can change any execution model we like on our application.
 
 ## Technology alternatives
 
