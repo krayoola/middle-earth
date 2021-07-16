@@ -213,7 +213,9 @@ PureConfig - [Typesafe config](https://github.com/lightbend/config)
 
 - Expose health check APIs for both services.
 
-- Create a performance testing suite using [Gatling.io](https://github.com/gatling/gatling)
+- performance testing suite using [Gatling.io](https://github.com/gatling/gatling)
+
+- Create a docker-compose yaml file
 
 ## Demo
 
