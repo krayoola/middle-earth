@@ -166,7 +166,7 @@ Also testing every layer of the application feels so much easier due to most of 
 
 Why I choose fs2.Stream over others? Aside from its being a purely functional streaming library, For me it's a great fit to the ecosystem since fs2.stream is a first class citizen of http4s. I would say integration is easy, along with their core functional abstraction under the hood, cats. also worth to mention that because of its pull based approach of streaming we mitigate any network and buffer overload also reduce any resource hungry operation. that said it fits perfectly on our requirement.
 
-Why Effect pattern? by doing so. we build our application by wrapping behaviors/description in a effect, which then be evaluated in a single place. and will not execute directly that might introduce side effects, additionally we can change any execution model we like on our application.
+Why Effect pattern? by doing so. we build our application by wrapping behaviors/description in a effect, which then be evaluated in a latter of the application. and be sure that there are no operation that will execute directly that would introduce side effects, additionally we can change any execution model we like on our application.
 
 ## Technology alternatives
 
@@ -216,6 +216,8 @@ PureConfig - [Typesafe config](https://github.com/lightbend/config)
 - performance testing suite using [Gatling.io](https://github.com/gatling/gatling)
 
 - Create a docker-compose yaml file
+
+- upgrade to a more standard response format such as JSON. 
 
 ## Demo
 
